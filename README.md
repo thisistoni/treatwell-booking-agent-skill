@@ -63,7 +63,14 @@ The helper intentionally has no order-submission command and accepts no customer
 
 ## Install
 
-Copy `skills/booking-treatwell` into the skills directory used by the agent runtime. Common filesystem layouts include a personal skills directory or a project-local skills directory; consult the runtime's documentation because discovery paths differ.
+Clone the repository, then copy `skills/booking-treatwell` into the skills directory used by the agent runtime:
+
+```bash
+git clone https://github.com/thisistoni/treatwell-booking-agent-skill.git
+cp -R treatwell-booking-agent-skill/skills/booking-treatwell /path/to/your/skills/
+```
+
+Common filesystem layouts include a personal skills directory or a project-local skills directory; consult the runtime's documentation because discovery paths differ.
 
 For a repository-aware agent, you can also point it directly at:
 
