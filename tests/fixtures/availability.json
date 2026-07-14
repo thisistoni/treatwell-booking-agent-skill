@@ -1,0 +1,55 @@
+{
+  "employees": {
+    "10": {"id": 10, "name": "Simal"},
+    "11": {"id": 11, "name": "Betül"}
+  },
+  "days": {
+    "2026-07-16": {
+      "date": "2026-07-16",
+      "dayNumber": "16",
+      "dayName": "Do.",
+      "isAvailable": true,
+      "times": [
+        {
+          "startTime": "09:00",
+          "employeeIds": [10, 11],
+          "discountPercentage": 25,
+          "salePriceAmount": "7,50 €",
+          "fullPriceAmount": "10 €",
+          "savingAmount": "2,50 €"
+        },
+        {
+          "startTime": "10:00",
+          "employeeIds": [11],
+          "discountPercentage": 0,
+          "salePriceAmount": "10 €",
+          "fullPriceAmount": "10 €",
+          "savingAmount": "0 €"
+        }
+      ]
+    },
+    "2026-07-17": {
+      "date": "2026-07-17",
+      "dayNumber": "17",
+      "dayName": "Fr.",
+      "isAvailable": false,
+      "times": []
+    }
+  },
+  "firstIncludedDate": "2026-07-16",
+  "lastIncludedDate": "2026-07-17",
+  "moreDaysInThePast": false,
+  "moreDaysInTheFuture": false,
+  "employeeSelectionAllowed": true,
+  "skus": {
+    "456": {
+      "id": "456",
+      "durationMinutes": 10,
+      "employees": [
+        {"id": 10, "employeeName": "Simal"},
+        {"id": 11, "employeeName": "Betül"}
+      ]
+    }
+  },
+  "services": [{"id": "TR123", "name": "Handmassage", "skuIds": ["456"]}]
+}

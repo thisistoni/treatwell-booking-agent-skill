@@ -1,0 +1,25 @@
+{
+  "type": "local-appointment",
+  "currencyCode": "EUR",
+  "amountBeforeDiscount": 7.5,
+  "discountAmount": 0,
+  "outstandingAmount": 7.5,
+  "paymentMethods": [{"name": "PAY_AT_VENUE"}],
+  "startDateTime": "2026-07-16T09:00:00",
+  "totalDurationInMinutes": 10,
+  "offers": [
+    {
+      "type": "no-option",
+      "name": "Handmassage",
+      "durationInMinutes": 10,
+      "employee": {"name": "Simal"},
+      "originalPrice": 10,
+      "discountedPrice": 7.5,
+      "menuItemId": "TR123"
+    }
+  ],
+  "cancellationPolicy": {"refundPeriodDurationInHours": 24, "withinRefundPeriod": false},
+  "reschedulePolicy": {"noticePeriodDurationInHours": 1},
+  "requiresUserConsent": false,
+  "discountCodes": []
+}
