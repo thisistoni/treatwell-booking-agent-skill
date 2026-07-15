@@ -54,6 +54,7 @@ The design follows the open Agent Skills pattern: discovery metadata in `SKILL.m
 - list and search a salon's services and exact service options;
 - return duration, displayed prices, eligible professionals, and opening hours;
 - check employee-aware availability for a date range;
+- speak in natural, friendly salon language without exposing scripts, tools, IDs, or lookup mechanics;
 - verify a chosen slot through Treatwell's basket;
 - generate the official secure-checkout URL;
 - place a real appointment through the browser after customer details, OTP/CAPTCHA/payment handoff, and explicit final confirmation;
