@@ -19,4 +19,4 @@ Include a concise impact description, reproduction steps using synthetic data, a
 - Treat an unclear submission result as unknown. Verify it before retrying.
 - Hand CAPTCHA, OTP, login, 3-D Secure, wallet approval, and similar challenges back to the customer.
 
-The bundled helper intentionally cannot submit a Treatwell order.
+The bundled helper intentionally cannot submit a Treatwell order. The complete skill can place a booking through the interactive browser workflow after explicit final confirmation.

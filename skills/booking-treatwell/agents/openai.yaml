@@ -1,4 +1,4 @@
 interface:
   display_name: "Book Treatwell Appointments"
   short_description: "Find services, availability, and book safely"
-  default_prompt: "Use $booking-treatwell to find a Treatwell salon service, check available times, and prepare a booking."
+  default_prompt: "Use $booking-treatwell to find a Treatwell service, check available times, and place the booking after I confirm the final summary."

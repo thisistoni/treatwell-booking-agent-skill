@@ -30,13 +30,13 @@ Do not depend solely on these attributes; Treatwell can change them.
 4. Do not opt into salon or Treatwell marketing unless the customer explicitly asked to opt in.
 5. Select the customer's chosen payment method. Do not infer consent to prepayment from consent to book.
 6. Let the customer complete CAPTCHA, Turnstile, OTP, login, 3-D Secure, wallet approval, or other authentication when presented.
-7. Stop before the final booking/payment button.
+7. Stop immediately before the final booking/payment button, show the exact summary, and request fresh confirmation.
 
 ## Final confirmation boundary
 
-Recheck availability if enough time has passed that the slot could have changed. Present the complete summary required by `SKILL.md` and ask for explicit confirmation to place the booking now.
+Recheck availability if enough time has passed that the slot could have changed. Present the complete summary required by `SKILL.md` and ask for explicit confirmation to place the booking now. This is a pause for consent, not the end of a real booking request.
 
-After confirmation, click the final action once. Wait for a definitive Treatwell result.
+After confirmation, click the final action once. Wait for a definitive Treatwell result. Do not return only the checkout URL or leave a confirmed booking unfinished.
 
 ## Failure handling
 

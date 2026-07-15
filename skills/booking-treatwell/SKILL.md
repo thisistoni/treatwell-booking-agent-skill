@@ -1,11 +1,11 @@
 ---
 name: booking-treatwell
-description: Finds Treatwell salon services, resolves service options, checks real-time appointment availability, prepares a verified checkout, and completes bookings through a browser with explicit customer confirmation. Use when a customer asks about a Treatwell salon's treatments, prices, staff, open slots, or wants to schedule an appointment from a Treatwell venue URL.
+description: Finds Treatwell salon services, resolves service options, checks real-time appointment availability, prepares verified checkout, and places real appointments through a browser after explicit confirmation. Use when a customer asks about a Treatwell salon's treatments, prices, staff, open slots, or wants the agent to book an appointment from a Treatwell venue URL.
 ---
 
 # Book Treatwell Appointments
 
-Use Treatwell's customer booking flow without coupling the workflow to a chat channel or agent platform. Prefer the bundled helper for structured reads and URL preparation when the operator has permission; otherwise use the browser workflow.
+Use Treatwell's customer booking flow without coupling the workflow to a chat channel or agent platform. Complete real booking requests in the browser. The bundled helper performs structured discovery and verification but is only an intermediate step; it deliberately cannot submit an order.
 
 ## Non-negotiable safeguards
 
@@ -13,6 +13,7 @@ Use Treatwell's customer booking flow without coupling the workflow to a chat ch
 - Do not send customer data until the customer has chosen the exact service option, date, time, professional preference, price, and payment method.
 - Immediately before the final booking action, show a compact summary and obtain explicit confirmation. An earlier request such as "book me tomorrow" is not final confirmation.
 - Treat clicking the final booking/pay button or posting to an order endpoint as the committing action.
+- When the requester confirms the final summary and the browser is available, perform the committing browser action. Do not stop at a checkout URL or describe the booking as merely prepared.
 - Never invent availability, prices, policies, or confirmation numbers. Recheck the slot immediately before submission.
 - Never bypass CAPTCHA, Turnstile, OTP, login, payment authentication, rate limits, or other access controls. Ask the customer to take over when required.
 - Do not log or persist names, phone numbers, emails, payment data, OTPs, cookies, or session tokens.
@@ -20,10 +21,11 @@ Use Treatwell's customer booking flow without coupling the workflow to a chat ch
 
 ## Choose a path
 
-1. If a supported browser is available, use it for the committing booking flow.
-2. If live script access is authorized, use `scripts/treatwell.py` for service discovery, availability, and checkout preparation, then switch to the browser.
-3. If scripts fail with a changed interface, access denial, CAPTCHA, or ambiguous data, use [references/browser-workflow.md](references/browser-workflow.md).
-4. If neither path is available, provide the salon booking URL and state what the customer must do manually.
+1. If the requester only asks for services or times, return that information without starting checkout.
+2. If the requester asks to book and a supported browser is available, use it for the committing booking flow.
+3. If live script access is authorized, use `scripts/treatwell.py` for service discovery, availability, and checkout preparation, then continue in the browser.
+4. If scripts fail with a changed interface, access denial, CAPTCHA, or ambiguous data, use [references/browser-workflow.md](references/browser-workflow.md).
+5. If no interactive browser is available, provide the salon booking URL and clearly state that no booking was made.
 
 Use the salon URL supplied by the user. If none is supplied and the conversation is about the configured example salon, the helper defaults to CS Beauty:
 
@@ -58,7 +60,7 @@ python3 scripts/treatwell.py availability \
 
 Add `--employee "<name-or-id>"` only when the customer requests a professional. Quote returned times in the salon timezone. Offer a short, useful set of slots rather than dumping the full response. Availability is volatile; never imply that a displayed slot is reserved.
 
-## Prepare checkout
+## Prepare checkout as an intermediate step
 
 After the customer selects a slot, verify it and build the non-committing checkout:
 
@@ -73,11 +75,13 @@ python3 scripts/treatwell.py prepare-booking \
   --acknowledge-authorization
 ```
 
-This validates current availability, inspects the basket, and returns a `secure_checkout_url`; it does not create an order. Compare the returned price, duration, service, employee, and policies with what the customer selected. If anything changed, explain the change and ask the customer to choose again.
+This validates current availability, inspects the basket, and returns a `secure_checkout_url`; the helper itself does not create an order. Compare the returned price, duration, service, employee, and policies with what the customer selected. If anything changed, explain the change and ask the customer to choose again. For a real booking request, immediately continue with the browser workflow.
 
 ## Complete in the browser
 
 Open `secure_checkout_url` and follow [references/browser-workflow.md](references/browser-workflow.md). Collect the minimum required customer details. Prefer pay-at-venue when the customer has not explicitly selected online payment and Treatwell offers it.
+
+A request to book is complete only when Treatwell shows a definitive booking confirmation. A generated checkout URL, verified basket, filled form, or confirmation question is not a completed booking.
 
 Before submission, show:
 
@@ -89,7 +93,13 @@ Before submission, show:
 
 Ask: `Confirm that I should place this booking now?`
 
-Submit only after an unambiguous yes to that summary. After submission, report success only from Treatwell's confirmation page or response. Include the confirmation reference and management/cancellation link when shown. If the result is unclear, say that status is unknown and verify through Treatwell before retrying; never submit twice speculatively.
+After an unambiguous yes to that summary, click the final booking/payment action once and wait for Treatwell's result. Report success only from Treatwell's confirmation page or response. Include the confirmation reference and management/cancellation link when shown. If the result is unclear, say that status is unknown and verify through Treatwell before retrying; never submit twice speculatively.
+
+## Definition of done
+
+- Service or availability request: return accurate current information in the salon timezone.
+- Checkout-preparation request: return the verified `secure_checkout_url` and say no booking was made.
+- Real booking request: obtain the required details and final confirmation, submit once in the browser, and return Treatwell's definitive confirmation or an explicit unknown status.
 
 ## Offline parsing and testing
 

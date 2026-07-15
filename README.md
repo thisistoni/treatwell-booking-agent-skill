@@ -12,7 +12,7 @@ The skill is platform- and channel-agnostic. A WhatsApp bot, website assistant, 
 CS Beauty in Vienna is the configured example/default. Pass any Treatwell venue URL to use another salon.
 
 > [!IMPORTANT]
-> The included helper can prepare checkout but cannot submit an order. A browser agent must show the exact booking summary and obtain fresh customer confirmation immediately before the final Treatwell action.
+> This skill supports real appointment booking. The helper prepares and verifies checkout; the browser agent then shows the exact summary, obtains fresh confirmation, and places the booking through Treatwell's normal checkout.
 
 ## How it works
 
@@ -56,10 +56,10 @@ The design follows the open Agent Skills pattern: discovery metadata in `SKILL.m
 - check employee-aware availability for a date range;
 - verify a chosen slot through Treatwell's basket;
 - generate the official secure-checkout URL;
-- guide a browser agent through customer details, OTP/CAPTCHA/payment handoff, confirmation, and result verification;
+- place a real appointment through the browser after customer details, OTP/CAPTCHA/payment handoff, and explicit final confirmation;
 - prevent accidental or duplicate bookings with a strict final-confirmation boundary.
 
-The helper intentionally has no order-submission command and accepts no customer PII or payment data.
+The helper intentionally has no order-submission command and accepts no customer PII or payment data. This does not prevent the skill from booking: the browser agent performs the final action through Treatwell's customer checkout.
 
 ## Install
 
@@ -122,7 +122,7 @@ python3 skills/booking-treatwell/scripts/treatwell.py prepare-booking \
   --acknowledge-authorization
 ```
 
-The result includes `submission_status: "not_submitted"` and `secure_checkout_url`. The agent opens that URL in a browser, fills the normal Treatwell checkout, stops before the final button, and asks the customer to confirm the exact booking summary.
+The result includes `submission_status: "not_submitted"` and `secure_checkout_url`. That status applies only to the helper step. For a real booking request, the agent opens the URL, fills Treatwell's checkout, asks the customer to confirm the exact final summary, clicks the final action once, and reports the resulting Treatwell confirmation.
 
 Example result shape:
 
