@@ -1,4 +1,3 @@
-import argparse
 import importlib.util
 import json
 from pathlib import Path
@@ -65,16 +64,9 @@ class TreatwellHelperTests(unittest.TestCase):
         self.assertEqual(json.loads(query["offers"][0])[0]["employeeId"], 10)
         self.assertNotIn("order", parsed.path)
 
-    def test_requires_authorization_for_network(self):
-        args = argparse.Namespace(acknowledge_authorization=False)
-        old = tw.os.environ.pop("TREATWELL_AUTOMATION_AUTHORIZED", None)
-        try:
-            with self.assertRaises(tw.SkillError) as raised:
-                tw.require_authorization(args, needs_network=True)
-            self.assertEqual(raised.exception.code, "authorization_required")
-        finally:
-            if old is not None:
-                tw.os.environ["TREATWELL_AUTOMATION_AUTHORIZED"] = old
+    def test_live_commands_have_no_unlock_flag(self):
+        args = tw.parser().parse_args(["services"])
+        self.assertFalse(hasattr(args, "acknowledge_authorization"))
 
     def test_rejects_non_treatwell_hostname(self):
         with self.assertRaises(tw.SkillError) as raised:

@@ -1,14 +1,14 @@
 # Implementation notes
 
-## Authorization and interface status
+## Interface status
 
 No public, self-serve Treatwell developer API was found during the July 2026 research for this skill. Treatwell's partner terms mention APIs and booking widgets, but no unauthenticated developer onboarding or public booking API documentation was available.
 
-Treatwell Austria's website terms prohibit automated systems or software that extract website/app content unless Treatwell has granted a written license. The live-network helper therefore requires `--acknowledge-authorization` (or `TREATWELL_AUTOMATION_AUTHORIZED=1`). The flag is an operator assertion, not permission from Treatwell.
+The helper uses the observed structured web interfaces by default because they are the cleanest way to retrieve services, availability, and basket details. No unlock flag or environment variable is required.
 
 Terms: https://www.treatwell.at/info/nutzungsbedingungen/
 
-Use browser-driven customer interaction as the default for an unlicensed deployment. Before production or high-volume operation, obtain Treatwell's written authorization or an official integration.
+These interfaces are undocumented and can change. Operators remain responsible for reviewing applicable terms for their deployment. Treat access failures and interface changes as fallback signals, not as reasons to disable the structured path preemptively.
 
 ## Observed web interfaces
 

@@ -32,7 +32,7 @@ Open official Treatwell secure checkout in a browser
 Show exact summary → obtain explicit confirmation → submit once
 ```
 
-Structured reads and checkout preparation are deterministic when authorized. Browser use remains the committing path and the fallback whenever Treatwell changes an undocumented interface, returns an access challenge, or requires customer authentication.
+Structured reads and checkout preparation use the cleanest available web interfaces automatically. Browser use remains the committing path and the fallback whenever Treatwell changes an undocumented interface, returns an access challenge, or requires customer authentication.
 
 ## What is included
 
@@ -97,8 +97,7 @@ Read the salon menu:
 ```bash
 python3 skills/booking-treatwell/scripts/treatwell.py services \
   --salon-url "https://www.treatwell.at/ort/cs-beauty-4/" \
-  --query "Wimpernlifting" \
-  --acknowledge-authorization
+  --query "Wimpernlifting"
 ```
 
 Check availability using IDs returned by `services`:
@@ -108,8 +107,7 @@ python3 skills/booking-treatwell/scripts/treatwell.py availability \
   --service-id "TR6952257" \
   --option-id "13207687" \
   --date "2026-07-16" \
-  --days 7 \
-  --acknowledge-authorization
+  --days 7
 ```
 
 Prepare a selected slot without submitting it:
@@ -119,8 +117,7 @@ python3 skills/booking-treatwell/scripts/treatwell.py prepare-booking \
   --service-id "TR6952257" \
   --option-id "13207687" \
   --date "2026-07-16" \
-  --time "09:00" \
-  --acknowledge-authorization
+  --time "09:00"
 ```
 
 The result includes `submission_status: "not_submitted"` and `secure_checkout_url`. That status applies only to the helper step. For a real booking request, the agent opens the URL, fills Treatwell's checkout, asks the customer to confirm the exact final summary, clicks the final action once, and reports the resulting Treatwell confirmation.
@@ -145,13 +142,13 @@ Example result shape:
 }
 ```
 
-## Authorization and Treatwell API status
+## Treatwell API and interface status
 
 There is no public, self-serve Treatwell booking API documented for this use case. The helper uses undocumented interfaces already used by Treatwell's public website, so they can change without notice.
 
-More importantly, [Treatwell Austria's website terms](https://www.treatwell.at/info/nutzungsbedingungen/) prohibit automated screen scraping unless Treatwell has granted a written license. Live helper commands therefore require `--acknowledge-authorization` or `TREATWELL_AUTOMATION_AUTHORIZED=1`. This is an operator assertion, not a way to obtain permission.
+The structured helper works immediately without an unlock flag, special environment variable, login, or API key. If an interface changes or Treatwell returns an access challenge, the skill falls back to the normal browser flow.
 
-For an unlicensed deployment, use the skill's browser workflow. Before production or high-volume deployment, obtain written Treatwell authorization or an official integration. The skill never bypasses access controls, CAPTCHA, Turnstile, OTP, login, rate limits, or payment authentication.
+Operators are responsible for reviewing [Treatwell Austria's website terms](https://www.treatwell.at/info/nutzungsbedingungen/) for their deployment. The skill never bypasses access controls, CAPTCHA, Turnstile, OTP, login, rate limits, or payment authentication.
 
 ## Test
 

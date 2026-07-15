@@ -19,7 +19,6 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 DEFAULT_SALON_URL = "https://www.treatwell.at/ort/cs-beauty-4/"
-TERMS_URL = "https://www.treatwell.at/info/nutzungsbedingungen/"
 USER_AGENT = "booking-treatwell-skill/0.1"
 DEFAULT_TIMEOUT = 20
 TREATWELL_DOMAINS = {
@@ -81,20 +80,6 @@ def canonical_salon_url(value: str) -> str:
     if parsed.scheme != "https" or not official_host:
         fail("invalid_salon_url", "Use an HTTPS Treatwell venue URL.")
     return urlunparse(("https", parsed.netloc, parsed.path or "/", "", "", ""))
-
-
-def require_authorization(args: argparse.Namespace, needs_network: bool) -> None:
-    acknowledged = (
-        args.acknowledge_authorization
-        or os.getenv("TREATWELL_AUTOMATION_AUTHORIZED") == "1"
-    )
-    if needs_network and not acknowledged:
-        fail(
-            "authorization_required",
-            "Live automated access requires operator-confirmed authorization. "
-            "Use --acknowledge-authorization only when authorized, or use a browser.",
-            {"terms": TERMS_URL},
-        )
 
 
 def request_bytes(
@@ -659,7 +644,6 @@ def basket_summary(basket: dict, service_id: str, date: str, time: str) -> dict:
 
 
 def command_services(args: argparse.Namespace) -> dict:
-    require_authorization(args, needs_network=not bool(args.html_file))
     state = load_venue_state(args)
     venue, channel = venue_data(state)
     services = flatten_services(venue, include_descriptions=args.include_descriptions)
@@ -680,8 +664,6 @@ def resolve_context(args: argparse.Namespace) -> tuple[dict, dict, dict, list[di
 
 
 def command_availability(args: argparse.Namespace) -> dict:
-    needs_network = not (args.html_file and args.availability_file)
-    require_authorization(args, needs_network=needs_network)
     venue, channel, service, options = resolve_context(args)
     selection = selection_payload(service, options)
     availability = load_availability(args, venue, channel, selection)
@@ -716,8 +698,6 @@ def command_availability(args: argparse.Namespace) -> dict:
 
 
 def command_prepare_booking(args: argparse.Namespace) -> dict:
-    needs_network = not (args.html_file and args.availability_file and args.basket_file)
-    require_authorization(args, needs_network=needs_network)
     venue, channel, service, options = resolve_context(args)
     availability = load_availability(
         args, venue, channel, selection_payload(service, options)
@@ -791,11 +771,6 @@ def add_common(parser: argparse.ArgumentParser) -> None:
         "--language", default="de", help="Treatwell language code (default: de)."
     )
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT)
-    parser.add_argument(
-        "--acknowledge-authorization",
-        action="store_true",
-        help="Assert authorization for live automated Treatwell access.",
-    )
 
 
 def add_selection(parser: argparse.ArgumentParser) -> None:

@@ -1,6 +1,6 @@
 # Treatwell browser workflow
 
-Use this workflow when live script access is not authorized, a helper fails, or a booking is ready for checkout. Labels vary by language and responsive layout, so prefer roles, accessible names, and stable `data-cy` attributes over CSS class names.
+Use this workflow when a helper fails or a booking is ready for checkout. Labels vary by language and responsive layout, so prefer roles, accessible names, and stable `data-cy` attributes over CSS class names.
 
 ## Service and availability
 

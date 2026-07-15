@@ -12,7 +12,7 @@ Include a concise impact description, reproduction steps using synthetic data, a
 
 ## Deployment guidance
 
-- Obtain appropriate authorization before using undocumented interfaces or automated extraction in production.
+- Review applicable platform terms before production or high-volume deployment.
 - Keep customer identity and payment details inside the interactive checkout wherever possible.
 - Do not persist browser cookies, session tokens, OTPs, or payment data.
 - Require a fresh, exact confirmation immediately before the committing booking or payment action.
