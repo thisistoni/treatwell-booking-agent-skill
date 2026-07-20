@@ -1,6 +1,47 @@
 ---
 name: booking-treatwell
 description: Finds Treatwell salon services, resolves service options, checks real-time appointment availability, prepares verified checkout, and places real appointments through a browser after explicit confirmation. Use when a customer asks about a Treatwell salon's treatments, prices, staff, open slots, or wants the agent to book an appointment from a Treatwell venue URL.
+metadata:
+  hermes:
+    requires_toolsets: [browser]
+    script_runtime:
+      commands:
+        - name: treatwell
+          path: scripts/treatwell.py
+          interpreter: python3
+          allowed_subcommands: [services, availability, prepare-booking]
+          allowed_flags:
+            - --salon-url
+            - --language
+            - --timeout
+            - --query
+            - --include-descriptions
+            - --service-id
+            - --service
+            - --option-id
+            - --date
+            - --days
+            - --employee
+            - --limit
+            - --time
+          network: true
+          allowed_host_suffixes:
+            - treatwell.at
+            - treatwell.be
+            - treatwell.ch
+            - treatwell.co.uk
+            - treatwell.com
+            - treatwell.de
+            - treatwell.es
+            - treatwell.fr
+            - treatwell.gr
+            - treatwell.ie
+            - treatwell.it
+            - treatwell.lt
+            - treatwell.nl
+            - treatwell.pt
+          timeout_seconds: 45
+          max_output_characters: 100000
 ---
 
 # Book Treatwell Appointments
@@ -38,6 +79,8 @@ Use Treatwell's customer booking flow without coupling the workflow to a chat ch
 3. Use `scripts/treatwell.py` for service discovery, availability, and checkout preparation whenever shell execution and network access are available, then continue in the browser.
 4. If scripts fail with a changed interface, access denial, CAPTCHA, or ambiguous data, use [references/browser-workflow.md](references/browser-workflow.md).
 5. If no interactive browser is available, provide the salon booking URL and clearly state that no booking was made.
+
+When the host exposes `run_business_skill_script`, use that reviewed runner instead of requesting terminal access. Call it with `skill: booking-treatwell`, `command: treatwell`, and the same argument list shown below. Otherwise use the shell commands as written when shell execution is available.
 
 Use the salon URL supplied by the user. If none is supplied and the conversation is about the configured example salon, the helper defaults to CS Beauty:
 
