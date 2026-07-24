@@ -1,11 +1,10 @@
 import importlib.util
 import json
-from pathlib import Path
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
-
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills" / "booking-treatwell" / "scripts" / "treatwell.py"

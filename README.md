@@ -57,7 +57,8 @@ The design follows the open Agent Skills pattern: discovery metadata in `SKILL.m
 - speak in natural, friendly salon language without exposing scripts, tools, IDs, or lookup mechanics;
 - verify a chosen slot through Treatwell's basket;
 - generate the official secure-checkout URL;
-- place a real appointment through the browser after customer details, OTP/CAPTCHA/payment handoff, and explicit final confirmation;
+- relay Treatwell's booking-phone SMS code through the same browser session while handing payment, login, CAPTCHA, and wallet challenges back to the customer;
+- place a real appointment through the browser after customer details and explicit final confirmation;
 - prevent accidental or duplicate bookings with a strict final-confirmation boundary.
 
 The helper intentionally has no order-submission command and accepts no customer PII or payment data. This does not prevent the skill from booking: the browser agent performs the final action through Treatwell's customer checkout.

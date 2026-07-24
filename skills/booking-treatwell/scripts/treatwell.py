@@ -6,17 +6,17 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import html
-from html.parser import HTMLParser
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import unicodedata
+from html.parser import HTMLParser
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlparse, urlunparse
 from urllib.request import Request, urlopen
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 DEFAULT_SALON_URL = "https://www.treatwell.at/ort/cs-beauty-4/"
 USER_AGENT = "booking-treatwell-skill/0.1"
@@ -756,8 +756,8 @@ def command_prepare_booking(args: argparse.Namespace) -> dict:
 def default_date() -> str:
     try:
         return dt.datetime.now(ZoneInfo("Europe/Vienna")).date().isoformat()
-    except Exception:
-        return dt.date.today().isoformat()
+    except ZoneInfoNotFoundError:
+        return dt.datetime.now(dt.UTC).date().isoformat()
 
 
 def add_common(parser: argparse.ArgumentParser) -> None:

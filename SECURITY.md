@@ -17,6 +17,7 @@ Include a concise impact description, reproduction steps using synthetic data, a
 - Do not persist browser cookies, session tokens, OTPs, or payment data.
 - Require a fresh, exact confirmation immediately before the committing booking or payment action.
 - Treat an unclear submission result as unknown. Verify it before retrying.
-- Hand CAPTCHA, OTP, login, 3-D Secure, wallet approval, and similar challenges back to the customer.
+- Accept a booking-phone SMS code only for immediate entry into the customer's existing checkout session; never retain or repeat it.
+- Hand CAPTCHA, account login, 3-D Secure, payment authentication, wallet approval, and similar higher-risk challenges back to the customer.
 
 The bundled helper intentionally cannot submit a Treatwell order. The complete skill can place a booking through the interactive browser workflow after explicit final confirmation.

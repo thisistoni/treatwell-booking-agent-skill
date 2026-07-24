@@ -29,8 +29,18 @@ Do not depend solely on these attributes; Treatwell can change them.
 3. Enter only the required customer name, email, and telephone. Add appointment notes only when the customer requested them.
 4. Do not opt into salon or Treatwell marketing unless the customer explicitly asked to opt in.
 5. Select the customer's chosen payment method. Do not infer consent to prepayment from consent to book.
-6. Let the customer complete CAPTCHA, Turnstile, OTP, login, 3-D Secure, wallet approval, or other authentication when presented.
+6. Handle ordinary booking-phone SMS verification using the workflow below. Let the customer take over for CAPTCHA, Turnstile, account login, 3-D Secure, wallet approval, payment authentication, or other higher-risk challenges.
 7. Stop immediately before the final booking/payment button, show the exact summary, and request fresh confirmation.
+
+## Booking-phone SMS verification
+
+1. After submitting the customer's phone number, keep the exact browser tab, context, cookies, and checkout session open on the verification screen. Do not restart checkout or create a second session.
+2. Tell the customer that a verification code was sent to their phone. If the page shows a masked destination, include only that masked value.
+3. Ask the customer to send the current SMS code in the chat. Keep the request natural, for example: `I’ve sent a verification code to your phone. Please send me the code when it arrives.`
+4. When the customer replies, treat the value only as the current booking verification code. Enter it promptly into the open verification form and continue.
+5. Do not quote the code back, include it in summaries, write it to files, persist it in memory, or expose it in logs or tool output.
+6. If the code is rejected, ask the customer to check the latest SMS and try once more. If it expired, use the page's resend action once and ask for the new code. Do not loop resends or guess codes.
+7. After successful verification, continue the checkout. Still stop before the final booking/payment action and obtain the separate confirmation required by `SKILL.md`.
 
 ## Final confirmation boundary
 
@@ -42,7 +52,8 @@ After confirmation, click the final action once. Wait for a definitive Treatwell
 
 - Slot disappeared: return to availability and offer the nearest alternatives.
 - Price or policy changed: stop and ask the customer to accept the new terms.
-- Authentication challenge: ask the customer to take over; do not bypass it.
+- Booking SMS code rejected or expired: request the latest code or resend once without abandoning the current session.
+- Payment, login, CAPTCHA, 3-D Secure, or wallet challenge: ask the customer to take over; do not bypass it.
 - Page structure changed: use visible labels and accessibility information, not guessed selectors.
 - Unknown result after final click: inspect the current page and the customer's Treatwell bookings before any retry.
 - Confirmed booking: report the Treatwell reference and relevant management link.

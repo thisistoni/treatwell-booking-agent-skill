@@ -68,7 +68,7 @@ Use Treatwell's customer booking flow without coupling the workflow to a chat ch
 - Treat clicking the final booking/pay button or posting to an order endpoint as the committing action.
 - When the requester confirms the final summary and the browser is available, perform the committing browser action. Do not stop at a checkout URL or describe the booking as merely prepared.
 - Never invent availability, prices, policies, or confirmation numbers. Recheck the slot immediately before submission.
-- Never bypass CAPTCHA, Turnstile, OTP, login, payment authentication, rate limits, or other access controls. Ask the customer to take over when required.
+- Never bypass CAPTCHA, Turnstile, login, payment authentication, rate limits, or other access controls. Handle Treatwell's ordinary booking-phone SMS code through the same checkout session as described below; ask the customer to take over for account-login, wallet, 3-D Secure, payment, or anti-bot challenges.
 - Do not log or persist names, phone numbers, emails, payment data, OTPs, cookies, or session tokens.
 - Use the structured helper by default for services, prices, staff, availability, and checkout preparation. Fall back to the browser when an interface changes or access is challenged.
 
@@ -132,6 +132,8 @@ This validates current availability, inspects the basket, and returns a `secure_
 ## Complete in the browser
 
 Open `secure_checkout_url` and follow [references/browser-workflow.md](references/browser-workflow.md). Collect the minimum required customer details. Prefer pay-at-venue when the customer has not explicitly selected online payment and Treatwell offers it.
+
+When Treatwell sends a booking verification code to the customer's phone, keep the current browser tab and checkout session open. Tell the customer naturally that a code was sent and ask them to send it in the chat. Enter the received code promptly into the existing verification form, continue in the same session, and never repeat, log, or persist the code. An accepted code verifies the phone number; it does not replace the separate final confirmation to place the appointment.
 
 A request to book is complete only when Treatwell shows a definitive booking confirmation. A generated checkout URL, verified basket, filled form, or confirmation question is not a completed booking.
 
