@@ -643,6 +643,17 @@ def basket_summary(basket: dict, service_id: str, date: str, time: str) -> dict:
     }
 
 
+def require_pay_at_venue(basket: dict) -> dict:
+    methods = basket.get("payment_methods")
+    if not isinstance(methods, list) or "PAY_AT_VENUE" not in methods:
+        fail(
+            "pay_at_venue_unavailable",
+            "Pay at venue is not available for this booking.",
+            {"payment_methods": methods if isinstance(methods, list) else []},
+        )
+    return basket
+
+
 def command_services(args: argparse.Namespace) -> dict:
     state = load_venue_state(args)
     venue, channel = venue_data(state)
@@ -718,11 +729,13 @@ def command_prepare_booking(args: argparse.Namespace) -> dict:
             chosen[:20],
         )
     offers = checkout_offer(service, options, employee_id)
-    basket = basket_summary(
-        load_basket(args, venue, offers, args.date, args.time),
-        service["service_id"],
-        args.date,
-        args.time,
+    basket = require_pay_at_venue(
+        basket_summary(
+            load_basket(args, venue, offers, args.date, args.time),
+            service["service_id"],
+            args.date,
+            args.time,
+        )
     )
     return {
         "ok": True,

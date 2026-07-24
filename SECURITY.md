@@ -14,6 +14,7 @@ Include a concise impact description, reproduction steps using synthetic data, a
 
 - Review applicable platform terms before production or high-volume deployment.
 - Keep customer identity and payment details inside the interactive checkout wherever possible.
+- Use pay at venue only; never collect or enter card, wallet, PayPal, or other online-payment details.
 - Do not persist browser cookies, session tokens, OTPs, or payment data.
 - Require a fresh, exact confirmation immediately before the committing booking or payment action.
 - Treat an unclear submission result as unknown. Verify it before retrying.

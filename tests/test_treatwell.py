@@ -84,6 +84,16 @@ class TreatwellHelperTests(unittest.TestCase):
             tw.basket_summary(basket, "TR999", "2026-07-16", "09:00")
         self.assertEqual(raised.exception.code, "basket_mismatch")
 
+    def test_requires_pay_at_venue(self):
+        basket = json.loads((FIXTURES / "basket.json").read_text())
+        summary = tw.basket_summary(basket, "TR123", "2026-07-16", "09:00")
+        self.assertIs(tw.require_pay_at_venue(summary), summary)
+
+        summary["payment_methods"] = ["CARD", "PAYPAL"]
+        with self.assertRaises(tw.SkillError) as raised:
+            tw.require_pay_at_venue(summary)
+        self.assertEqual(raised.exception.code, "pay_at_venue_unavailable")
+
     def test_prepare_booking_offline_cli(self):
         result = subprocess.run(
             [

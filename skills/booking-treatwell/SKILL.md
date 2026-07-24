@@ -71,6 +71,8 @@ Use Treatwell's customer booking flow without coupling the workflow to a chat ch
 - Never bypass CAPTCHA, Turnstile, login, payment authentication, rate limits, or other access controls. Handle Treatwell's ordinary booking-phone SMS code through the same checkout session as described below; ask the customer to take over for account-login, wallet, 3-D Secure, payment, or anti-bot challenges.
 - Do not log or persist names, phone numbers, emails, payment data, OTPs, cookies, or session tokens.
 - Use the structured helper by default for services, prices, staff, availability, and checkout preparation. Fall back to the browser when an interface changes or access is challenged.
+- Always book as a guest. Do not sign in, create a Treatwell account, or ask the customer for account credentials.
+- Always select pay at venue. Never select card, PayPal, Apple Pay, Google Pay, a wallet, or any other online/prepaid payment method. If pay at venue is unavailable, stop and tell the customer that the booking cannot be completed by the agent.
 
 ## Choose a path
 
@@ -131,7 +133,7 @@ This validates current availability, inspects the basket, and returns a `secure_
 
 ## Complete in the browser
 
-Open `secure_checkout_url` and follow [references/browser-workflow.md](references/browser-workflow.md). Collect the minimum required customer details. Prefer pay-at-venue when the customer has not explicitly selected online payment and Treatwell offers it.
+Open `secure_checkout_url` and follow [references/browser-workflow.md](references/browser-workflow.md). Choose guest checkout and enter the customer's required name, email, and phone number. Never sign in or create an account. Select pay at venue only; the agent cannot complete bookings that require online payment.
 
 When Treatwell sends a booking verification code to the customer's phone, keep the current browser tab and checkout session open. Tell the customer naturally that a code was sent and ask them to send it in the chat. Enter the received code promptly into the existing verification form, continue in the same session, and never repeat, log, or persist the code. An accepted code verifies the phone number; it does not replace the separate final confirmation to place the appointment.
 
@@ -147,13 +149,13 @@ Before submission, show:
 
 Ask a short, natural question in the customer's language, such as: `Shall I book this appointment for you now?`
 
-After an unambiguous yes to that summary, click the final booking/payment action once and wait for Treatwell's result. Report success only from Treatwell's confirmation page or response. Include the confirmation reference and management/cancellation link when shown. If the result is unclear, say that status is unknown and verify through Treatwell before retrying; never submit twice speculatively.
+After an unambiguous yes to that summary, click the final booking/payment action once and wait for Treatwell's result. Report success only from Treatwell's confirmation page or response. Include the confirmation reference and management/cancellation link when shown. Tell the customer that a booking-confirmation email should arrive at their provided email address and that they can cancel or reschedule using the buttons in that email. If the result is unclear, say that status is unknown and verify through Treatwell before retrying; never submit twice speculatively.
 
 ## Definition of done
 
 - Service or availability request: return accurate current information in the salon timezone.
 - Checkout-preparation request: return the verified `secure_checkout_url` and say no booking was made.
-- Real booking request: obtain the required details and final confirmation, submit once in the browser, and return Treatwell's definitive confirmation or an explicit unknown status.
+- Real booking request: use guest checkout and pay at venue only, enter the required customer details, complete booking-phone SMS verification, obtain final confirmation, submit once in the browser, return Treatwell's definitive confirmation or an explicit unknown status, and explain that cancellation/rescheduling is available from the confirmation email.
 
 ## Offline parsing and testing
 
