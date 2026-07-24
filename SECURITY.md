@@ -19,6 +19,8 @@ Include a concise impact description, reproduction steps using synthetic data, a
 - Treat the customer's selection of a specific offered slot as authorization for that exact pay-at-venue booking; do not request redundant confirmation.
 - Treat an unclear submission result as unknown. Verify it before retrying.
 - Accept a booking-phone SMS code only for immediate entry into the customer's existing checkout session; never retain or repeat it.
-- Hand CAPTCHA, account login, 3-D Secure, payment authentication, wallet approval, and similar higher-risk challenges back to the customer.
+- Attempt CAPTCHA, Turnstile, and similar visible verification in the existing browser session before escalation; their appearance alone is not a reason to stop or request a person.
+- Preserve the exact browser session for secure takeover only when the runtime cannot complete a remaining challenge after real attempts.
+- Do not switch away from guest checkout or pay at venue to satisfy account-login, online-payment, 3-D Secure, or wallet requirements.
 
 The bundled helper intentionally cannot submit a Treatwell order. The complete skill places the customer's chosen slot through the interactive browser workflow without asking them to confirm the same selection again.

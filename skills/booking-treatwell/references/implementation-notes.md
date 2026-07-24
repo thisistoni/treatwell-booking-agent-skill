@@ -21,7 +21,7 @@ These are undocumented implementation details and can change without notice:
 - `/secure-checkout` accepts the verified selection as query parameters and renders the customer checkout.
 - `POST /checkout-api/order` is the committing action. The bundled helper intentionally never calls it.
 
-Do not use these paths to bypass normal controls. On 401, 403, 404, 409, 429, CAPTCHA, schema mismatch, or HTML instead of JSON, stop script use and fall back to the browser.
+On 401, 403, 404, 409, 429, browser verification, schema mismatch, or HTML instead of JSON, stop script use and fall back to the interactive browser. A CAPTCHA or Turnstile screen is not a terminal failure: follow the browser-verification workflow in the same checkout session.
 
 ## Helper output
 

@@ -128,6 +128,23 @@ class TreatwellHelperTests(unittest.TestCase):
         self.assertEqual(payload["basket"]["type"], "local-appointment")
         self.assertEqual(payload["basket"]["payment_methods"], ["PAY_AT_VENUE"])
 
+    def test_skill_attempts_browser_verification_before_handoff(self):
+        skill_text = (ROOT / "skills" / "booking-treatwell" / "SKILL.md").read_text()
+        workflow_text = (
+            ROOT / "skills" / "booking-treatwell" / "references" / "browser-workflow.md"
+        ).read_text()
+
+        self.assertIn("not as an automatic stop or human-handoff trigger", skill_text)
+        self.assertIn(
+            "never abandon the booking merely because verification appeared",
+            skill_text,
+        )
+        self.assertIn(
+            "Do not stop, request a person, or report failure merely because",
+            workflow_text,
+        )
+        self.assertNotIn("Let the customer take over for CAPTCHA", workflow_text)
+
 
 if __name__ == "__main__":
     unittest.main()

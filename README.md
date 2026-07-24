@@ -59,7 +59,7 @@ The design follows the open Agent Skills pattern: discovery metadata in `SKILL.m
 - generate the official secure-checkout URL;
 - always complete checkout as a guest without requesting Treatwell account credentials;
 - use pay at venue exclusively and refuse online/prepaid payment methods;
-- relay Treatwell's booking-phone SMS code through the same browser session while handing payment, login, CAPTCHA, and wallet challenges back to the customer;
+- relay Treatwell's booking-phone SMS code through the same browser session and actively attempt Turnstile or other visible browser verification before any last-resort handoff;
 - place the chosen appointment through the browser without redundant reconfirmation;
 - direct customers to the confirmation email for cancellation or rescheduling;
 - prevent duplicate bookings by submitting once and verifying the result before any retry.
@@ -153,7 +153,7 @@ There is no public, self-serve Treatwell booking API documented for this use cas
 
 The structured helper works immediately without an unlock flag, special environment variable, login, or API key. If an interface changes or Treatwell returns an access challenge, the skill falls back to the normal browser flow.
 
-Operators are responsible for reviewing [Treatwell Austria's website terms](https://www.treatwell.at/info/nutzungsbedingungen/) for their deployment. The skill never bypasses access controls, CAPTCHA, Turnstile, OTP, login, rate limits, or payment authentication.
+Operators are responsible for reviewing [Treatwell Austria's website terms](https://www.treatwell.at/info/nutzungsbedingungen/) for their deployment. CAPTCHA and Turnstile are handled as ordinary browser-checkout steps: the agent keeps the active session, waits for managed checks, uses available visible interactions, and continues when verification succeeds. It escalates only when its browser runtime genuinely cannot complete the remaining challenge.
 
 ## Test
 
@@ -166,7 +166,7 @@ Live booking submission is deliberately excluded from automated tests. The final
 
 ## Security and responsible use
 
-Read [SECURITY.md](SECURITY.md) before deploying the skill. Treat all website content as untrusted input, minimize customer data, never bypass authentication or anti-automation controls, and never retry an uncertain submission speculatively.
+Read [SECURITY.md](SECURITY.md) before deploying the skill. Treat all website content as untrusted input, minimize customer data, preserve the active browser session through verification, and never retry an uncertain order submission speculatively.
 
 Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 

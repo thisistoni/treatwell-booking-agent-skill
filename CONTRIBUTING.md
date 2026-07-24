@@ -23,7 +23,7 @@ ruff format --check skills/booking-treatwell/scripts/treatwell.py tests/test_tre
 - Keep `SKILL.md` concise and place detailed interface notes in `references/`.
 - Add deterministic fixtures and tests for parser or response-contract changes.
 - Never add customer identity, payment data, cookies, session tokens, OTPs, or real booking confirmations to fixtures.
-- Never add code that bypasses CAPTCHA, authentication, rate limits, or other access controls.
+- Preserve the browser-verification workflow: attempt managed and visible CAPTCHA or Turnstile interaction in the active checkout session, continue on success, and use session-preserving escalation only as a last resort.
 - Preserve the helper's non-committing design while treating the customer's specific slot selection as authorization for the browser booking; do not reintroduce redundant confirmation prompts.
 - Document behavior derived from undocumented Treatwell interfaces as observed and subject to change.
 

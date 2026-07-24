@@ -30,8 +30,18 @@ Do not depend solely on these attributes; Treatwell can change them.
 4. Enter only the required customer name, email, and telephone. Add appointment notes only when the customer requested them.
 5. Do not opt into salon or Treatwell marketing unless the customer explicitly asked to opt in.
 6. Select pay at venue. Never choose card, PayPal, Apple Pay, Google Pay, a wallet, or any online/prepaid method. If pay at venue is not offered, stop without booking.
-7. Handle ordinary booking-phone SMS verification using the workflow below. Let the customer take over for CAPTCHA, Turnstile, account login, 3-D Secure, wallet approval, payment authentication, or other higher-risk challenges.
+7. Handle booking-phone SMS verification using the workflow below. Treat CAPTCHA, Turnstile, and similar on-page verification as normal checkout steps: keep the same session and attempt them with the available browser interactions before considering escalation.
 8. Internally verify that the checkout still matches the slot the customer chose, then submit it once without asking the customer to confirm the same appointment again.
+
+## Browser verification
+
+1. Do not stop, request a person, or report failure merely because CAPTCHA, Turnstile, or an anti-bot verification is visible.
+2. Keep the exact checkout tab, browser context, cookies, and session open.
+3. Allow managed verification several seconds to resolve automatically. Inspect the page again before acting.
+4. If a visible checkbox, button, or challenge is available, use ordinary browser interaction to complete it. Re-inspect the page after each interaction and continue as soon as the challenge clears.
+5. If submission causes the verification to appear again, wait and make one more normal interaction attempt in the same session. Do not restart checkout, create parallel sessions, or submit multiple orders.
+6. Escalate only when the browser runtime explicitly cannot interact with the remaining challenge or the challenge repeatedly rejects the session after real attempts. When the host supports secure browser takeover, preserve and hand over that exact session rather than asking someone to reconstruct the booking.
+7. After the challenge succeeds, immediately continue the already-authorized booking. Do not ask the customer to reconfirm the appointment.
 
 ## Booking-phone SMS verification
 
@@ -66,7 +76,8 @@ Mask the email address when repeating it. If the email does not arrive shortly, 
 - Price or policy changed: stop and ask the customer to accept the new terms.
 - Pay at venue unavailable: explain that the agent cannot complete bookings requiring online payment and do not choose another payment method.
 - Booking SMS code rejected or expired: request the latest code or resend once without abandoning the current session.
-- Payment, login, CAPTCHA, 3-D Secure, or wallet challenge: ask the customer to take over; do not bypass it.
+- CAPTCHA or Turnstile challenge: follow **Browser verification** and attempt it in-session; escalate only after the browser cannot complete it.
+- Account login, online payment, 3-D Secure, or wallet challenge: do not switch away from guest checkout or pay at venue; stop if the required guest/pay-at-venue path is unavailable.
 - Page structure changed: use visible labels and accessibility information, not guessed selectors.
 - Unknown result after final click: inspect the current page and the customer's Treatwell bookings before any retry.
 - Confirmed booking: report the Treatwell reference and relevant management link.
