@@ -5,14 +5,14 @@
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776ab?logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A portable [Agent Skills](https://agentskills.io/) package that teaches an AI agent to find a Treatwell salon's services, check live appointment availability, prepare checkout, and book through a browser with an explicit human confirmation boundary.
+A portable [Agent Skills](https://agentskills.io/) package that teaches an AI agent to find a Treatwell salon's services, check live appointment availability, and book the customer's chosen slot through a browser without redundant confirmation loops.
 
 The skill is platform- and channel-agnostic. A WhatsApp bot, website assistant, desktop agent, or other runtime can use it if the runtime supports filesystem-based skills, shell execution for the optional helper, and a browser for checkout.
 
 CS Beauty in Vienna is the configured example/default. Pass any Treatwell venue URL to use another salon.
 
 > [!IMPORTANT]
-> This skill supports real appointment booking. The helper prepares and verifies checkout; the browser agent then shows the exact summary, obtains fresh confirmation, and places the booking through Treatwell's normal checkout.
+> This skill supports real appointment booking. Once the customer chooses a specific offered time, the agent proceeds directly through guest checkout, SMS verification, and pay-at-venue submission without asking them to confirm the same slot again.
 
 ## How it works
 
@@ -29,7 +29,7 @@ Check volatile availability and verify the selected basket
 Open official Treatwell secure checkout in a browser
       │
       ▼
-Show exact summary → obtain explicit confirmation → submit once
+Customer chooses a time → guest checkout → SMS code → submit once
 ```
 
 Structured reads and checkout preparation use the cleanest available web interfaces automatically. Browser use remains the committing path and the fallback whenever Treatwell changes an undocumented interface, returns an access challenge, or requires customer authentication.
@@ -60,9 +60,9 @@ The design follows the open Agent Skills pattern: discovery metadata in `SKILL.m
 - always complete checkout as a guest without requesting Treatwell account credentials;
 - use pay at venue exclusively and refuse online/prepaid payment methods;
 - relay Treatwell's booking-phone SMS code through the same browser session while handing payment, login, CAPTCHA, and wallet challenges back to the customer;
-- place a real appointment through the browser after customer details and explicit final confirmation;
+- place the chosen appointment through the browser without redundant reconfirmation;
 - direct customers to the confirmation email for cancellation or rescheduling;
-- prevent accidental or duplicate bookings with a strict final-confirmation boundary.
+- prevent duplicate bookings by submitting once and verifying the result before any retry.
 
 The helper intentionally has no order-submission command and accepts no customer PII or payment data. This does not prevent the skill from booking: the browser agent performs the final action through Treatwell's customer checkout.
 
@@ -92,7 +92,7 @@ The host agent should support:
 - filesystem-based Agent Skills discovery;
 - shell execution for the optional structured helper;
 - an interactive browser for checkout and authentication handoff;
-- a conversation channel capable of receiving explicit final confirmation.
+- a conversation channel capable of receiving customer details and the booking SMS code.
 
 ## Quick start
 
@@ -124,14 +124,15 @@ python3 skills/booking-treatwell/scripts/treatwell.py prepare-booking \
   --time "09:00"
 ```
 
-The result includes `submission_status: "not_submitted"` and `secure_checkout_url`. That status applies only to the helper step. For a real booking request, the agent opens the URL, fills Treatwell's checkout, asks the customer to confirm the exact final summary, clicks the final action once, and reports the resulting Treatwell confirmation.
+The result includes `submission_status: "not_submitted"` and `secure_checkout_url`. That status applies only to the helper step. `prepare-booking` goes directly to the checkout basket instead of querying availability again. For a real booking request, the customer's slot selection already authorizes that exact appointment, so the agent opens the URL, completes checkout and SMS verification, clicks the final action once, and reports the result without asking again.
 
 Example result shape:
 
 ```json
 {
   "submission_status": "not_submitted",
-  "confirmation_required": true,
+  "confirmation_required": false,
+  "booking_authorized_by_slot_selection": true,
   "selection": {
     "service_name": "Handmassage",
     "date": "2026-07-16",
@@ -161,7 +162,7 @@ python3 -m unittest discover -s tests -v
 python3 /path/to/skill-creator/scripts/quick_validate.py skills/booking-treatwell
 ```
 
-Live booking submission is deliberately excluded from automated tests. The final end-to-end test should be performed with an approved customer, slot, and explicit confirmation, then cancelled if it is only a test.
+Live booking submission is deliberately excluded from automated tests. The final end-to-end test should use an approved customer and a deliberately selected slot, then be cancelled if it is only a test.
 
 ## Security and responsible use
 

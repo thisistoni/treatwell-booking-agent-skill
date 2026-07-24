@@ -425,6 +425,54 @@ def resolve_employee(availability: dict, requested: str | None) -> int | None:
     return matches[0]
 
 
+def resolve_checkout_employee(
+    venue: dict, options: list[dict], requested: str | None
+) -> tuple[int | None, str | None]:
+    if not requested:
+        return None, None
+
+    employees = {
+        int(value["id"]): clean_text(value.get("name"))
+        for value in venue.get("employees", [])
+        if isinstance(value, dict) and str(value.get("id", "")).isdigit()
+    }
+    if requested.isdigit() and int(requested) in employees:
+        employee_id = int(requested)
+    else:
+        matches = [
+            employee_id
+            for employee_id, name in employees.items()
+            if normalize(name) == normalize(requested)
+        ]
+        if not matches:
+            fail(
+                "employee_not_found",
+                f"No professional matched {requested!r}.",
+                employees,
+            )
+        if len(matches) > 1:
+            fail(
+                "ambiguous_employee",
+                "Professional name is ambiguous; use an employee ID.",
+                matches,
+            )
+        employee_id = matches[0]
+
+    employee_name = employees[employee_id]
+    for option in options:
+        eligible = {
+            normalize(name)
+            for name in option.get("employees", [])
+            if isinstance(name, str)
+        }
+        if eligible and normalize(employee_name) not in eligible:
+            fail(
+                "employee_not_eligible",
+                f"{employee_name} is not eligible for the selected option.",
+            )
+    return employee_id, employee_name
+
+
 def parse_date(value: str) -> dt.date:
     try:
         return dt.date.fromisoformat(value)
@@ -710,24 +758,11 @@ def command_availability(args: argparse.Namespace) -> dict:
 
 def command_prepare_booking(args: argparse.Namespace) -> dict:
     venue, channel, service, options = resolve_context(args)
-    availability = load_availability(
-        args, venue, channel, selection_payload(service, options)
+    parse_date(args.date)
+    parse_time(args.time)
+    employee_id, employee_name = resolve_checkout_employee(
+        venue, options, args.employee
     )
-    employee_id = resolve_employee(availability, args.employee)
-    chosen = slots_from_availability(
-        availability,
-        start=parse_date(args.date),
-        days=1,
-        employee_id=employee_id,
-        limit=10000,
-    )
-    matching = [value for value in chosen if value["time"] == args.time]
-    if not matching:
-        fail(
-            "slot_unavailable",
-            "The requested slot is not currently available.",
-            chosen[:20],
-        )
     offers = checkout_offer(service, options, employee_id)
     basket = require_pay_at_venue(
         basket_summary(
@@ -740,7 +775,8 @@ def command_prepare_booking(args: argparse.Namespace) -> dict:
     return {
         "ok": True,
         "submission_status": "not_submitted",
-        "confirmation_required": True,
+        "confirmation_required": False,
+        "booking_authorized_by_slot_selection": True,
         "salon": {
             "venue_id": venue["id"],
             "name": venue.get("name"),
@@ -754,11 +790,15 @@ def command_prepare_booking(args: argparse.Namespace) -> dict:
             "date": args.date,
             "time": args.time,
             "employee_id": employee_id,
-            "employee_name": employee_map(availability).get(employee_id)
-            if employee_id
-            else None,
+            "employee_name": employee_name,
         },
-        "verified_slot": matching[0],
+        "checkout_attempt": {
+            "date": args.date,
+            "time": args.time,
+            "employee_id": employee_id,
+            "employee_name": employee_name,
+            "validation": "checkout_basket",
+        },
         "basket": basket,
         "secure_checkout_url": checkout_url(
             args.salon_url, int(venue["id"]), offers, args.date, args.time
@@ -827,7 +867,6 @@ def parser() -> argparse.ArgumentParser:
     )
     add_common(prepare)
     add_selection(prepare)
-    prepare.add_argument("--availability-file", help="Use captured availability JSON.")
     prepare.add_argument("--basket-file", help="Use captured basket JSON.")
     prepare.add_argument("--date", required=True)
     prepare.add_argument("--time", required=True)

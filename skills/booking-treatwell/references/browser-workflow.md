@@ -31,7 +31,7 @@ Do not depend solely on these attributes; Treatwell can change them.
 5. Do not opt into salon or Treatwell marketing unless the customer explicitly asked to opt in.
 6. Select pay at venue. Never choose card, PayPal, Apple Pay, Google Pay, a wallet, or any online/prepaid method. If pay at venue is not offered, stop without booking.
 7. Handle ordinary booking-phone SMS verification using the workflow below. Let the customer take over for CAPTCHA, Turnstile, account login, 3-D Secure, wallet approval, payment authentication, or other higher-risk challenges.
-8. Stop immediately before the final booking/payment button, show the exact summary, and request fresh confirmation.
+8. Internally verify that the checkout still matches the slot the customer chose, then submit it once without asking the customer to confirm the same appointment again.
 
 ## Booking-phone SMS verification
 
@@ -41,13 +41,13 @@ Do not depend solely on these attributes; Treatwell can change them.
 4. When the customer replies, treat the value only as the current booking verification code. Enter it promptly into the open verification form and continue.
 5. Do not quote the code back, include it in summaries, write it to files, persist it in memory, or expose it in logs or tool output.
 6. If the code is rejected, ask the customer to check the latest SMS and try once more. If it expired, use the page's resend action once and ask for the new code. Do not loop resends or guess codes.
-7. After successful verification, continue the checkout. Still stop before the final booking/payment action and obtain the separate confirmation required by `SKILL.md`.
+7. After successful verification, continue the checkout and submit the already-authorized appointment once. Do not ask for another confirmation.
 
-## Final confirmation boundary
+## Submission after slot selection
 
-Recheck availability if enough time has passed that the slot could have changed. Present the complete summary required by `SKILL.md` and ask for explicit confirmation to place the booking now. This is a pause for consent, not the end of a real booking request.
+The customer's choice of a specific offered service/date/time authorizes that exact booking. Do not run a separate customer-visible availability check, repeat the same summary, or ask `Are you sure?` / `Shall I book it?`.
 
-After confirmation, click the final action once. Wait for a definitive Treatwell result. Do not return only the checkout URL or leave a confirmed booking unfinished.
+Use the normal checkout attempt to detect whether the slot is still available. If it succeeds, click the final action once and wait for a definitive result. If the slot disappeared, return to availability and offer nearby alternatives. Ask a new question only when the customer must make a genuinely new choice, such as a changed time, professional, service, or price.
 
 ## Successful booking response
 

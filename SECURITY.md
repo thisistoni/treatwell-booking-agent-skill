@@ -16,9 +16,9 @@ Include a concise impact description, reproduction steps using synthetic data, a
 - Keep customer identity and payment details inside the interactive checkout wherever possible.
 - Use pay at venue only; never collect or enter card, wallet, PayPal, or other online-payment details.
 - Do not persist browser cookies, session tokens, OTPs, or payment data.
-- Require a fresh, exact confirmation immediately before the committing booking or payment action.
+- Treat the customer's selection of a specific offered slot as authorization for that exact pay-at-venue booking; do not request redundant confirmation.
 - Treat an unclear submission result as unknown. Verify it before retrying.
 - Accept a booking-phone SMS code only for immediate entry into the customer's existing checkout session; never retain or repeat it.
 - Hand CAPTCHA, account login, 3-D Secure, payment authentication, wallet approval, and similar higher-risk challenges back to the customer.
 
-The bundled helper intentionally cannot submit a Treatwell order. The complete skill can place a booking through the interactive browser workflow after explicit final confirmation.
+The bundled helper intentionally cannot submit a Treatwell order. The complete skill places the customer's chosen slot through the interactive browser workflow without asking them to confirm the same selection again.

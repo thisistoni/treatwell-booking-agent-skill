@@ -102,8 +102,6 @@ class TreatwellHelperTests(unittest.TestCase):
                 "prepare-booking",
                 "--html-file",
                 str(FIXTURES / "venue.html"),
-                "--availability-file",
-                str(FIXTURES / "availability.json"),
                 "--basket-file",
                 str(FIXTURES / "basket.json"),
                 "--service-id",
@@ -123,7 +121,10 @@ class TreatwellHelperTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["submission_status"], "not_submitted")
-        self.assertTrue(payload["confirmation_required"])
+        self.assertFalse(payload["confirmation_required"])
+        self.assertTrue(payload["booking_authorized_by_slot_selection"])
+        self.assertEqual(payload["checkout_attempt"]["validation"], "checkout_basket")
+        self.assertEqual(payload["selection"]["employee_name"], "Simal")
         self.assertEqual(payload["basket"]["type"], "local-appointment")
         self.assertEqual(payload["basket"]["payment_methods"], ["PAY_AT_VENUE"])
 

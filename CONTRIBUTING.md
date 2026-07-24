@@ -24,7 +24,7 @@ ruff format --check skills/booking-treatwell/scripts/treatwell.py tests/test_tre
 - Add deterministic fixtures and tests for parser or response-contract changes.
 - Never add customer identity, payment data, cookies, session tokens, OTPs, or real booking confirmations to fixtures.
 - Never add code that bypasses CAPTCHA, authentication, rate limits, or other access controls.
-- Preserve the explicit confirmation boundary and the helper's non-committing design.
+- Preserve the helper's non-committing design while treating the customer's specific slot selection as authorization for the browser booking; do not reintroduce redundant confirmation prompts.
 - Document behavior derived from undocumented Treatwell interfaces as observed and subject to change.
 
 ## Reporting interface changes
